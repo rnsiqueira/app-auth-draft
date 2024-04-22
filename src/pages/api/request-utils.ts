@@ -1,22 +1,24 @@
 import axios from "axios"
 
 
-const base = process.env.BASE_URL_BACKEND
+const base_url = process.env.BASE_URL_BACKEND
+
+type UserData = {
+    username: String,
+    password: String
+}
 
 
 export async function loginRequest
-    ( credentials ) {
-   
+    ({username, password}: UserData) {
 
-   
 
-    return await axios({
-        method: "post",
-        url: base+"user/login",
-        data: {
-            username: credentials.username,
-            password: credentials.password
-        }
+    return await axios.post(base_url+"/user/login", {
+        username: username,
+        password: password
+    })
+    .then((response) => {
+        console.log(response)
     })
 
 }

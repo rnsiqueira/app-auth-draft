@@ -1,5 +1,5 @@
 import { signIn } from "next-auth/react"
-import { useForm } from "react-hook-form"
+import { FormEventHandler, useState } from "react"
 
 
 /*
@@ -16,8 +16,24 @@ import { useForm } from "react-hook-form"
   }
   ```
 */
-export default function LoginComponent() {
-  const { register, handleSubmit } = useForm();
+
+export default function LoginForm() {
+  const [userData, setUserData] = useState({ email: "", password: "" })
+
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault()
+
+    const res = await signIn('credentials', {
+      email: userData.email,
+      password: userData.password
+
+    })
+
+    console.log(res)
+
+  }
+
+
   return (
     <>
       {/*
@@ -41,15 +57,16 @@ export default function LoginComponent() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-6" onSubmit={() => signIn("AppOffer")}>
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Email address
               </label>
               <div className="mt-2">
                 <input
-                  {...register("email")}
-                  id="email"
+                  id="Email"
+                  value={userData.email}
+                  onChange={({ target }) => setUserData({ ...userData, email: target.value })}
                   name="email"
                   type="email"
                   autoComplete="email"
@@ -72,8 +89,9 @@ export default function LoginComponent() {
               </div>
               <div className="mt-2">
                 <input
-                  {...register("password")}
-                  id="password"
+                  id="Password"
+                  value={userData.password}
+                  onChange={({ target }) => setUserData({ ...userData, password: target.value })}
                   name="password"
                   type="password"
                   autoComplete="current-password"

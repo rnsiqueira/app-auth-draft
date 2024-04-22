@@ -1,65 +1,53 @@
-import NextAuth from "next-auth"
+import NextAuth, { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
-import Credentials from "next-auth/providers/credentials"
-import { loginRequest } from "../request-utils"
+import CredentialsProvider from "next-auth/providers/credentials"
+import axios from "axios"
 
+const base_url = process.env.BASE_URL_BACKEND
 
-
-export const authOptions = {
-  // Configure one or more authentication providers
-  providers: [
- 
-  
-    Credentials({
-      name: "Your Credetials",
-
-      credentials: {
-        username: { label: "Username", type: "text" },
-        password: { label: "Password", type: "password" }
-      },
-
-      async authorize(credentials, req) {
-       const response = await loginRequest(credentials)
-       console.log(response)
-        
-      }
-    }),
-
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET
-    }),
-
-  ],
-
-  callbacks: {
-
-    async jwt({ token, account }) {
-      // Persist the OAuth access_token to the token right after signin
-      if (account) {
-        token.accessToken = account.access_token
-      }
-      return token
-    },
-    async session({ session, token, user }) {
-      // Send properties to the client, like an access_token from a provider.
-      session.accessToken = token.accessToken
-      return session
-    },
-
-    async signIn({ account, profile }) {
-      if (account.provider === "google") {
-        return profile.email_verified && profile.email.endsWith("@google.com")
-      }
-      return true // Do different verification for other providers that don't have `email_verified`
-    },
-
+const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
   },
+  providers: [
+    CredentialsProvider({
+      type: "credentials",
+      credentials: {},
+      authorize(credentials, req) {
+        const { email, password } = credentials as {
+          email: string;
+          password: string;
+        };
+        // perform you login logic
+        // find out user from db
+       console.log("Login witn: "+email +" pass: "+ password)
 
-
-}
-
-
+        // if everything is fine
+        return {
+          id: "1234",
+          name: "John Doe",
+          email: "john@gmail.com",
+          role: "admin",
+        };
+      },
+    }),
+  ],
+  pages: {
+    signIn: "/auth/signin",
+    // error: '/auth/error',
+    // signOut: '/auth/signout'
+  },
+  callbacks: {
+    jwt(params) {
+      // update token
+      if (params.user?.role) {
+        params.token.role = params.user.role;
+      }
+      // return final_token
+      return params.token;
+    },
+  },
+};
 
 
 export default NextAuth(authOptions)

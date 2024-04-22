@@ -32,7 +32,7 @@ function Auth({ children }) {
     }
 
     if (status === "unauthenticated") {
-        route.push('/api/auth/signin')
+        route.push('/auth/login')
     }
     
     console.log(status)
