@@ -3,22 +3,29 @@ import axios from "axios"
 
 const base_url = process.env.BASE_URL_BACKEND
 
-type UserData = {
-    username: String,
-    password: String
+type User = {
+    username: String;
+    password: String;
 }
 
+let api = axios.create({
+    baseURL: base_url,
+    timeout: 3000,
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+})
 
-export async function loginRequest
-    ({username, password}: UserData) {
 
+export function loginRequest
+    ({ username, password }: User) {
 
-    return await axios.post(base_url+"/user/login", {
-        username: username,
+    console.log("function: " + username)
+    return api.post("/user/login", {
+        userName: username,
         password: password
-    })
-    .then((response) => {
-        console.log(response)
-    })
+    }
+)
 
 }

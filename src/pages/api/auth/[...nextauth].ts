@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
-import axios from "axios"
+import { loginRequest } from "../request-utils";
 
 const base_url = process.env.BASE_URL_BACKEND
 
@@ -15,21 +15,27 @@ const authOptions: NextAuthOptions = {
       credentials: {},
       authorize(credentials, req) {
         const { email, password } = credentials as {
-          email: string;
-          password: string;
+          email: String;
+          password: String;
         };
-        // perform you login logic
-        // find out user from db
-       console.log("Login witn: "+email +" pass: "+ password)
+
+        const user = {
+          username: email,
+          password: password
+        }
+       
+       const resp = loginRequest(user)
+
+       console.log(resp)
 
         // if everything is fine
-        return {
-          id: "1234",
-          name: "John Doe",
-          email: "john@gmail.com",
-          role: "admin",
-        };
+        return resp
       },
+    }),
+
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRECT
     }),
   ],
   pages: {
@@ -45,6 +51,13 @@ const authOptions: NextAuthOptions = {
       }
       // return final_token
       return params.token;
+    },
+
+    async signIn({ account, profile }) {
+      if (account.provider === "google") {
+        return profile.email_verified && profile.email.endsWith("@gmail.com")
+      }
+      return true // Do different verification for other providers that don't have `email_verified`
     },
   },
 };
