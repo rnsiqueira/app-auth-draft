@@ -1,35 +1,43 @@
 import NextAuth, { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { loginRequest } from "../request-utils";
+import { api, apiAddToken, loginRequest } from "../request-utils";
+import test from "node:test";
 
 const base_url = process.env.BASE_URL_BACKEND
 
 const authOptions: NextAuthOptions = {
   session: {
-    strategy: "jwt",
+    strategy: "jwt"
   },
   providers: [
     CredentialsProvider({
       type: "credentials",
       credentials: {},
-      authorize(credentials, req) {
+
+      async authorize(credentials, req) {
         const { email, password } = credentials as {
           email: String;
           password: String;
         };
 
-        const user = {
-          username: email,
-          password: password
-        }
-       
-       const resp = loginRequest(user)
+    
 
-       console.log(resp)
+
+        
+
+        const { data } = await api.post("/user/auth", {}, {
+          auth: {
+            username: email,
+            password: password
+          }
+        })
+
+        api.defaults.headers.common["Authorization"] = "Bearer " + data
+
 
         // if everything is fine
-        return resp
+        return data
       },
     }),
 
@@ -45,6 +53,7 @@ const authOptions: NextAuthOptions = {
   },
   callbacks: {
     jwt(params) {
+
       // update token
       if (params.user?.role) {
         params.token.role = params.user.role;

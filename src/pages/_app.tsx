@@ -1,6 +1,7 @@
-import { SessionProvider, useSession } from "next-auth/react";
+import { SessionProvider, signOut, useSession } from "next-auth/react";
 import { AppProps } from "next/app";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import 'tailwindcss/tailwind.css'
 
 
@@ -32,9 +33,10 @@ function Auth({ children }) {
     }
 
     if (status === "unauthenticated") {
+
         route.push('/auth/login')
     }
-    
+
     console.log(status)
     return children
 }
