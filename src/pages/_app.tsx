@@ -1,7 +1,6 @@
 import { SessionProvider, signOut, useSession } from "next-auth/react";
 import { AppProps } from "next/app";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import 'tailwindcss/tailwind.css'
 
 

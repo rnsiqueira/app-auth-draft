@@ -1,3 +1,4 @@
+import Navbar from "@/pages/navbar"
 import { signIn } from "next-auth/react"
 import { FormEventHandler, useState } from "react"
 
@@ -45,6 +46,7 @@ export default function LoginForm() {
           ```
         */}
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+        <Navbar/>
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
             className="mx-auto h-10 w-auto"
